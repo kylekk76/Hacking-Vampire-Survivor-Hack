@@ -6,6 +6,6 @@ I need to practice Regex, so nothing better than unlocking everything in a game 
 - [ ] Change advanced stats of the heros.
 - [ ] Modify Weapons.
 - [ ] Modify limits in weapons or heros.
-- [ ] Modify gold.
+- [x] Modify gold.
 - [ ] Unlock heros, Weapons, and mix.
 - [ ] More things that i can not think now.
