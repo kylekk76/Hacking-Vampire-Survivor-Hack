@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import hashlib
+
 #This handle and read the files that we gonna use
 def files():
     fileMain= open("main.bundle.js","r",encoding="utf8")
@@ -31,7 +32,7 @@ def change_stats(f):
     
     name= input("introduce the name of the champion: ").capitalize()
     
-    print("I got program a bit more powerfull version of the character do you want go with that or introduce your own modification")
+    print("I got program a more powerfull version of the character do you want go with that or introduce your own modification")
     mstats=input("Choose betwen Basic or Own: ").capitalize()
     if mstats=="Basic":
         Super_Hero={"hero":"maxHp':0x299,'armor':0x10,'regen':0x0,'moveSpeed':0x3,'power':0x1,'cooldown':0x1,'area':0x5,'speed':0x1,'duration':0x1,'amount':0x0,'luck':0x10,'growth':0x5,'greed':0x1,'curse':0x1,'magnet':0x5,'revivals':0x0,'rerolls':0x0,'skips':0x0,'banish':0x0"}
@@ -64,9 +65,13 @@ def change_stats(f):
     #you can change the values manual here to add to the hero that you like
     
     f=f.replace(dit[name], Super_Hero["hero"])
-    print("this are the old stats: ",dit[name])
+    print("Do you want to apply this change also to all the characters? ")
+    if input("Y/N ").capitalize() == "Y":
+        for n in ChampionNames:
+            f=f.replace(dit[n],Super_Hero["hero"])
+            dit.update({n:Super_Hero["hero"]})
     dit.update({name:Super_Hero["hero"]})
-    print("this are the new stats: ",dit[name])
+    
     
     
     return f
@@ -84,6 +89,49 @@ def Unlock_all_Characters(f):
     print(f"You have unlock all the {len(text)} characters")
     return f
 
+def Unlock_all_Achivements(f):
+    alist=[]
+    text=re.findall(r"'achieved':!0x1",f)
+    for n in text:
+        b=n.replace("!","")
+        alist.append(b)
+
+    for n,v in enumerate(text):
+        f=f.replace(text[n],alist[n])
+    print(f"You have unlock all the {len(text)} Achivements")
+    return f    
+
+def Unlock_all_Arcanas(f):
+    alist=[]
+    text=re.findall(r"enabled':!0x1,'unlocked':!0x1",f)
+    for n in text:
+        b=n.replace("!","")
+        alist.append(b)
+
+    for n,v in enumerate(text):
+        f=f.replace(text[n],alist[n])
+    print(f"You have unlock all the {len(text)} arcanas")
+    return f
+
+def Unlock_all_stuff(f):
+    alist=[]
+    text=re.findall(r"'hidden':!0x1",f)
+    for n in text:
+        b=n.replace("!","")
+        alist.append(b)
+    for n,v in enumerate(text):
+        f=f.replace(text[n],alist[n])
+    
+    blist=[]
+    text1=re.findall(r"'hidden':!0x0",f)
+    for n in text1:
+        b=n.replace("!","")
+        blist.append(b)
+    for n,v in enumerate(text1):
+        f=f.replace(text1[n],blist[n])
+
+    print(f"You have Unhide {len(text1)+len(text)} objects")
+    return f
 #Add gold
 def add_gold(fd):
     print("Your actuall gold is: ",re.findall('\"Coin..:(\d*)\.*\d*',fd)[0])
@@ -143,7 +191,7 @@ def save_sav(g,fileData):
 
 #Main Function
 def main():
-    # fileMain,f,fileData,fd,x=files()
+
     run=True
     
     while run:
@@ -151,7 +199,6 @@ def main():
         print("""
 If you are running this file you need to know few things
 
-    * Second this is an alpha so i just have implemented modify character stats, modify gold and Unlock all the characters
     * This folder come with my SaveData.sav and main.bundle.js also come with an extra copy on the folder for if u mess
       things up, you can always use them.
     * If you wanna use your own files, copy them from the respective folders from your pc and pastle them here, i recomend you also
@@ -159,11 +206,11 @@ If you are running this file you need to know few things
     * This program get an input of your file and reescribe on it all the modifications that you want, after finish you just need to copy
       the resultant file and pastle it in the directory where you pick it up at first.
     * If you have any problems just report it, and i will try to fix it. 
-    * If you wanna exit to get your own folders you can just time Close.
+    * If you wanna exit to get your own folders you can just write Close.
 
           """)
 
-        print(" Do you want change Stats, get more gold or Unlock all the characters?:")
+        print(" Do you want change Stats, get more gold or Unlock stuff?:")
         answer=input("Introduce Stats, Gold, Unlock or Close: ").capitalize()
         fileMain,f,fileData,fd,x=files()
         if answer == "Stats":
@@ -177,7 +224,17 @@ If you are running this file you need to know few things
             save_sav(g,fileData)
 
         elif answer == "Unlock":
-            x=Unlock_all_Characters(f)
+            x=f
+            if input("Do you want unlock all the characters? Y/N ").capitalize() == "Y": x=Unlock_all_Characters(x)
+            
+            if input("Do you want to unlock all the achivement items: Y/N ").capitalize() =="Y":x=Unlock_all_Achivements(x)
+            
+            if input("Do you want to unlock also the arcanas: Y/N ").capitalize() =="Y": x=Unlock_all_Arcanas(x)
+
+            if input("Do you want to unhide some objects that normally you would not find in the pulls?: Y/N ").capitalize() =="Y":x=Unlock_all_stuff(x)
+
+            
+
             save_main(x,fileMain)
 
         elif answer=="Close":
